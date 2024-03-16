@@ -42,6 +42,7 @@ class HandTracker:
 
         # RGB 2 BGR
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        cv2.imshow(":)", image)
 
         if results.multi_hand_landmarks:
             for hand in results.multi_hand_landmarks:
