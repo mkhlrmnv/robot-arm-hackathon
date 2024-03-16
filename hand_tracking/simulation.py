@@ -33,8 +33,17 @@ class RobotArmSimulation:
     def simulate(self, iterations=1000):
         i = 0
         while i < iterations:
-            scaled_coords = self.tracker.getPalmCoords()
+            stuff = self.tracker.getPalmCoords()
+            scaled_coords = stuff[0]
             coords = self.getReal(scaled_coords[0], scaled_coords[1])
+
+            dist = stuff[1]
+            maxDist = dist[1] * 2
+            currentDist = (dist[0] / maxDist ) - 0.1
+            if currentDist < 0:
+                currentDist = 0
+
+            print(f"opening %: {currentDist}")
 
             if coords:
                 theta1, theta2 = self.calculateAngles(coords[0], coords[1])
@@ -48,10 +57,11 @@ class RobotArmSimulation:
                 plt.figure()
                 plt.plot([0, x1], [0, y1], 'b-o')  # First link
                 plt.plot([x1, x2], [y1, y2], 'r-o')  # Second link
+                plt.plot([0, 10 * currentDist], [-10, -10], 'g-o')
                 plt.plot(0, 0, 'ko')  # Base
                 plt.axis('equal')
-                plt.xlim(-self.arm_length * 2, self.arm_length * 2)
-                plt.ylim(0, self.arm_length)
+                plt.xlim(-100, 100)
+                plt.ylim(-20, 100)
                 plt.xlabel('X-axis')
                 plt.ylabel('Y-axis')
                 plt.title('Robot Arm Simulation')
