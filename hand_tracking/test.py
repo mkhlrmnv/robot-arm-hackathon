@@ -1,8 +1,10 @@
 import unittest
 from simulation import RobotArmSimulation
+from tracker import HandTracker
 
 class TestRobotArmSimulation(unittest.TestCase):
     def setUp(self):
+        self.tracker = HandTracker()
         self.robot_arm = RobotArmSimulation(arm_length=44, max_x=176, max_y=88)
 
     def testCalculateAngles(self):
@@ -30,6 +32,16 @@ class TestRobotArmSimulation(unittest.TestCase):
         real_x, real_y = self.robot_arm.getReal(x, y)
         self.assertAlmostEqual(real_x, 44, places=2)
         self.assertAlmostEqual(real_y, 79.2, places=2)
+
+    
+    def testIndexLength(self):
+        list = [(0.27, 0.56), (0.30, 0.49), (0.30, 0.43), (0.31, 0.38)]
+        list2 = [(0.31, 0.38), (0.34, 0.52)]
+        res = self.tracker.dist(list)
+        res2 = self.tracker.dist(list2)
+        self.assertAlmostEqual(res, 0.187148, places=2)
+        self.assertAlmostEqual(res2, 0.143178, places=2)
+    
 
 if __name__ == '__main__':
     unittest.main()
