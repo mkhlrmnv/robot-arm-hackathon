@@ -1,27 +1,31 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SH1107.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 128 // OLED display height, in pixels
+
+Adafruit_SH1107 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
 void setup() {
   Serial.begin(9600);
-  Serial.println("Arduino initialized");
+  if (!display.begin(SH1107_ADDR_DEFAULT, SCREEN_HEIGHT)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;);
+  }
+  delay(2000);
+  display.clearDisplay();
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    String data = Serial.readStringUntil('\n');
-    Serial.println("Received data: " + data);
-    
-    int commaIndex = data.indexOf(',');
-    if (commaIndex != -1) {
-      String x_str = data.substring(0, commaIndex);
-      String y_str = data.substring(commaIndex + 1);
-
-      int x = x_str.toInt();
-      int y = y_str.toInt();
-
-      Serial.print("Received coordinates: ");
-      Serial.print(x);
-      Serial.print(", ");
-      Serial.println(y);
-    } else {
-      Serial.println("Invalid data format");
-    }
+  display.clearDisplay();
+  for (int i = 0; i <= 1000; i++) {
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.print("Count: ");
+    display.println(i);
+    display.display();
+    delay(500); // Adjust delay as needed
   }
 }

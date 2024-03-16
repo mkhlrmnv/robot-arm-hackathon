@@ -1,4 +1,4 @@
-import serial
+"""import serial
 import time
 from tracker import HandTracker
 
@@ -17,4 +17,14 @@ if __name__ == "__main__":
         x, y = tracker.getPalmCoords()
         ser.write(f"{x},{y}\n".encode())
         print(f"Sent coordinates: {x}, {y}")
-        time.sleep(1)  # Adjust the delay as needed
+        time.sleep(1)  # Adjust the delay as needed"""
+import serial
+import time
+
+arduino = serial.Serial(port='/dev/cu.usbserial-110',  baudrate=115200, timeout=.1)
+
+while True:
+    cmd = input("put something: ")
+    cmd += '\r'
+    arduino.write(cmd.encode())
+
