@@ -21,11 +21,17 @@ def calculateAngles(x, y):
     theta2 = np.arccos((x**2 + y**2 - armLength**2 - armLength**2) / (2 * armLength * armLength))
     theta1 = np.arctan2(y, x) - np.arctan2(armLength * np.sin(theta2), armLength + armLength * np.cos(theta2))
     # print(f"theta1: {theta1}, theta2 {theta2}")
-    # print(armLength * math.cos(theta1) + armLength*(math.cos(theta1)*math.cos(theta2) - math.sin(theta1) * math.sin(theta2)))
-    # print(armLength * math.sin(theta1) + armLength*(math.cos(theta1)*math.sin(theta2) - math.sin(theta1) * math.cos(theta2)))
-    return theta1, theta2
+    midY = y0 + armLength * np.sin(theta1)
 
-print(calculateAngles(40, 50))
+    print(midY)
+
+    print(theta1, theta2)
+
+    if midY < 0:
+        theta2 = -np.arccos((x**2 + y**2 - armLength**2 - armLength**2) / (2 * armLength * armLength))
+        theta1 = np.arctan2(y, x) - np.arctan2(armLength * np.sin(theta2), armLength + armLength * np.cos(theta2))
+
+    return theta1, theta2
 
 def getReal(x, y):
     realX = (x * maxX) - (maxX / 2)
