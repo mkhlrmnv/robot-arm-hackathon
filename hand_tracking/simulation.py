@@ -13,7 +13,7 @@ class RobotArmSimulation:
         self.x0 = 0
         self.y0 = 0
 
-    def calculate_angles(self, x, y):
+    def calculateAngles(self, x, y):
         theta2 = np.arccos((x**2 + y**2 - self.arm_length**2 - self.arm_length**2) / (2 * self.arm_length * self.arm_length))
         theta1 = np.arctan2(y, x) - np.arctan2(self.arm_length * np.sin(theta2), self.arm_length + self.arm_length * np.cos(theta2))
         
@@ -25,7 +25,7 @@ class RobotArmSimulation:
 
         return theta1, theta2
 
-    def get_real(self, x, y):
+    def getReal(self, x, y):
         real_x = (x * self.max_x) - (self.max_x / 2)
         real_y = ((1 - y) * self.max_y)
         return real_x, real_y
@@ -60,7 +60,7 @@ class RobotArmSimulation:
 
             i += 1
 
-    def capture_initial_coords(self, iterations=100):
+    def captureInitialCoords(self, iterations=100):
         i = 0
         while i < iterations:
             coords = self.tracker.get_palm_coords()
@@ -77,4 +77,4 @@ class RobotArmSimulation:
 if __name__ == "__main__":
     robot_arm = RobotArmSimulation()
     robot_arm.simulate(iterations=1000)
-    robot_arm.capture_initial_coords()
+    robot_arm.captureInitialCoords()
