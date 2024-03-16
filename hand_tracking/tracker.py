@@ -7,12 +7,12 @@ class HandTracker:
         # Initialize MediaPipe Hands
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_hands = mp.solutions.hands
-        self.hands = self.mp_hands.Hands(min_detection_confidence=0.8, min_tracking_confidence=0.5)
+        self.hands = self.mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.8, min_tracking_confidence=0.5)
         # OpenCV setup
         self.cap = cv2.VideoCapture(0)
         self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        # Arm setup
+        # Arm setupq
         self.arm_length = 150
         self.arm_thickness = 10
         self.arm_color = (0, 255, 0)
@@ -48,29 +48,15 @@ class HandTracker:
                 # Assuming you want coordinates of the first landmark
                 palm_coords = hand.landmark[0].x, hand.landmark[0].y
                 return palm_coords
-        return None
-
-    def update_arm_angles(self, palm_coords):
-        x, y = palm_coords
-        x = int(x * self.width)
-        y = int(y * self.height)
-        dx = x - self.arm_center[0]
-        dy = y - self.arm_center[1]
-        self.angle1 = np.arctan2(dy, dx)
-
-    def draw_arm(self, image):
-        arm_segment1_end = (int(self.arm_center[0] + self.arm_length * np.cos(self.angle1)),
-                            int(self.arm_center[1] + self.arm_length * np.sin(self.angle1)))
-        arm_segment2_end = (int(arm_segment1_end[0] + self.arm_length * np.cos(self.angle1 + self.angle2)),
-                            int(arm_segment1_end[1] + self.arm_length * np.sin(self.angle1 + self.angle2)))
-        cv2.line(image, self.arm_center, arm_segment1_end, self.arm_color, self.arm_thickness)
-        cv2.line(image, arm_segment1_end, arm_segment2_end, self.arm_color, self.arm_thickness)
+        return (0.5, 0)
 
     def close(self):
         self.cap.release()
         cv2.destroyAllWindows()
 
-# Example usage:
+
+
+
 if __name__ == "__main__":
     hand_tracker = HandTracker()
     while True:
