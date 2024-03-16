@@ -33,11 +33,11 @@ class RobotArmSimulation:
     def simulate(self, iterations=1000):
         i = 0
         while i < iterations:
-            scaled_coords = self.tracker.get_palm_coords()
-            coords = self.get_real(scaled_coords[0], scaled_coords[1])
+            scaled_coords = self.tracker.getPalmCoords()
+            coords = self.getReal(scaled_coords[0], scaled_coords[1])
 
             if coords:
-                theta1, theta2 = self.calculate_angles(coords[0], coords[1])
+                theta1, theta2 = self.calculateAngles(coords[0], coords[1])
 
                 x1 = self.x0 + self.arm_length * np.cos(theta1)
                 y1 = self.y0 + self.arm_length * np.sin(theta1)
@@ -63,7 +63,7 @@ class RobotArmSimulation:
     def captureInitialCoords(self, iterations=100):
         i = 0
         while i < iterations:
-            coords = self.tracker.get_palm_coords()
+            coords = self.tracker.getPalmCoords()
             if coords:
                 print(f"Original: {coords}")
                 real_x = (coords[0] * self.max_x) - (self.max_x / 2)

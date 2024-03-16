@@ -20,7 +20,7 @@ class HandTracker:
         self.angle1 = 0
         self.angle2 = 0
 
-    def get_palm_coords(self):
+    def getPalmCoords(self):
         ret, frame = self.cap.read()
         if not ret:
             return None
@@ -61,7 +61,7 @@ class HandTracker:
 if __name__ == "__main__":
     hand_tracker = HandTracker()
     while True:
-        coords = hand_tracker.get_palm_coords()
+        coords = hand_tracker.getPalmCoords()
         if coords:
             print("Palm coordinates:", coords)
         if cv2.waitKey(10) & 0xFF == ord('q'):
