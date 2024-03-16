@@ -29,8 +29,8 @@ print(calculateAngles(40, 50))
 
 def getReal(x, y):
     realX = (x * maxX) - (maxX / 2)
-    realY = (y * maxY)
-    return realX, realYq
+    realY = ((1 - y) * maxY)
+    return realX, realY
 
 while i < 1000:
     scaledCoords = tracker.get_palm_coords()
