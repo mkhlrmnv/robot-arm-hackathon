@@ -66,7 +66,7 @@ while (1) {
     Paint_DrawString_EN(10, 20, numberString3, &Font12, WHITE, WHITE);
     OLED_1in5_Display_Part(BlackImage, 0, 0, 32, 64); 
 
-    Driver_Delay_ms(100);  
+    Driver_Delay_ms(1);  
     
     // OLED_1in5_Clear();  
   }   
