@@ -1,6 +1,4 @@
 import serial
-import time
-from tracker import HandTracker
 from simulation import RobotArmSimulation
 
 class CoordinateCalculator:
