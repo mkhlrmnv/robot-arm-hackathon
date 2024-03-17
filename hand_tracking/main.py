@@ -15,8 +15,8 @@ class CoordinateCalculator:
     """
 
     def __init__(self):
-        self.l1 = 44
-        self.l2 = 44
+        self.l1 = 16
+        self.l2 = 16
         self.tot_x = (self.l1 + self.l2) * 2
         self.tot_y = self.l1 + self.l2
         self.x0 = 0
@@ -52,14 +52,15 @@ if __name__ == "__main__":
         x, y = cords[0]
         realX, realY = tracker.getReal(x, y, main.tot_x, main.tot_y)
 
+        theta1, theta2 = tracker.calculateAngles(realX, realY, main.y0, main.l1, main.l2)
 
         # calculates distance between fingers
         dist = tracker.calcDis(cords[1][1], cords[1][0])
 
         # if connected to arduino -> send to arduino
         if ser:
-            ser.write(f"{round(realX)};{round(realY)};{dist}\r".encode())
-            print(f"Sent coordinates: {round(realX)}, {round(realY)}, {dist}")
+            ser.write(f"{round(theta1)};{round(theta2)};{dist}\r".encode())
+            print(f"Sent coordinates: {round(theta1)}, {round(theta2)}, {dist}")
         else:
             print(f"Detected coords: {round(realX)}, {round(realY)}, {dist}")
 
