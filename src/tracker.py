@@ -50,6 +50,17 @@ class HandTracker:
         return res
     
     def calculateAnglesRad(self, x, y, y0, l1, l2):
+        """
+        Calculates angles in radians so that arm can reach some x and y coord
+
+        :param x: wanted x coord
+        :param y: wanted y coord
+        :param y0: y coord of arms base (used to prevent arm going under it's base)
+        :param l1: length of bottom arm
+        :param l2: length of upper arm
+
+        :return: tuple(theta1, theta2) <- theta1 is angle between floor and bottom arm and theta2 is angle between arms
+        """
         theta1 = 0
         theta2 = 0
 
@@ -81,7 +92,7 @@ class HandTracker:
     
     def calculateAngles(self, x, y, y0, l1, l2):
         """
-        Calculates angles so that arm can reach some x and y coord
+        Calculates angles in degrees so that arm can reach some x and y coord
 
         :param x: wanted x coord
         :param y: wanted y coord
@@ -119,9 +130,11 @@ class HandTracker:
             theta2 = -np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
             theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
 
+        # converts to degrees
         theta1 = np.degrees(theta1)
         theta2 = np.degrees(theta2)
 
+        # limits angles to be from -90 to 90
         if theta2 < -90:
             theta2 = -90
         if theta2 > 90:
@@ -131,7 +144,8 @@ class HandTracker:
             theta1 = -90
         if theta1 > 90:
             theta1 = 90
-
+        
+        # converts them so return is in range from 0 to 180
         theta1 = theta1 + 90
         theta2 = theta2 + 90
         
