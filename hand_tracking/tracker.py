@@ -37,7 +37,7 @@ class HandTracker:
         Calculates total distance between list of points (x, y)
 
         :param list: list of hand landmarks => list[landmark]
-        :return: returns total distance between all points / landmarks
+        :return: total distance between all points / landmarks
         """
 
         # variable for result
@@ -50,27 +50,68 @@ class HandTracker:
         return res
     
     def calculateAngles(self, x, y, y0, l1, l2):
+        """
+        Calculates angles so that arm can reach some x and y coord
+
+        :param x: wanted x coord
+        :param y: wanted y coord
+        :param y0: y coord of arms base (used to prevent arm going under it's base)
+        :param l1: length of bottom arm
+        :param l2: length of upper arm
+
+        :return: tuple(theta1, theta2) <- theta1 is angle between floor and bottom arm and theta2 is angle between arms
+        """
+
+        # theta2 = cos^-1(D) || D = (x^2 + y^2 - l1^2 - l2^2) / (2 * l1 * l2)
         theta2 = np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
+
+        #theta1 = atan2(y, x) - atan2(l2 * sin(theta2), l1 + l2 * cos(theta2))
         theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
         
+        # calculates what is coordinate of middle join with new angles
         midY = y0 + l1 * np.sin(theta1)
 
+        # if it's negative, new_theta2 = old_theta2 * (-1), and new theta1 is calculates with new theta2
         if midY < 0:
             theta2 = -np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
             theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
 
+        # returns tuple
         return theta1, theta2
 
     def getReal(self, x, y, max_x, max_y):
+        """
+        Converts scaled x, y to arm length dependant x, y 
+
+        :param x: scaled x [0, 1]
+        :param y: scaled y [0, 1]
+        :param max_x: total len of x
+        :param max_y: total len of y
+
+        :return: tuple(real_x, real_y)
+        """
+
         real_x = (x * max_x) - (max_x / 2)
         real_y = ((1 - y) * max_y)
         return real_x, real_y
     
     def calcDis(self, dist, len):
+        """
+        Calculates distance between fingers on scale [0, 100]
+
+        :param dist: distance between fingers
+        :param len: len of index finger
+
+        :return: dist in percents 
+        """
+
         maxDist = dist * 2
         currentDist = (len / maxDist ) - 0.1
         if currentDist < 0:
             currentDist = 0
+
+        return round(currentDist * 100)
+        
 
     def getPalmCoords(self):
         """
