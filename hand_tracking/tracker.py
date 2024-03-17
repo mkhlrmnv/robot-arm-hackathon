@@ -20,7 +20,13 @@ class HandTracker:
         self.angle1 = 0
         self.angle2 = 0
 
-    def get_palm_coords(self):
+    def dist(self, list):
+        res = 0
+        for i in range(len(list) - 1):
+            res += np.sqrt(np.power(list[i].x - list[i + 1].x, 2) + np.power(list[i].y - list[i + 1].y, 2))
+        return res
+
+    def getPalmCoords(self):
         ret, frame = self.cap.read()
         if not ret:
             return None
@@ -48,8 +54,19 @@ class HandTracker:
             for hand in results.multi_hand_landmarks:
                 # Assuming you want coordinates of the first landmark
                 palm_coords = hand.landmark[0].x, hand.landmark[0].y
-                return palm_coords
-        return (0.5, 0)
+
+                fingerList = [hand.landmark[8], hand.landmark[4]]
+                fingerDist = self.dist(fingerList)
+                # print(f"finger dist: {fingerDist}")
+
+                indexList = [hand.landmark[5], hand.landmark[6], hand.landmark[7], hand.landmark[8]]
+                indexLen = self.dist(indexList)
+                # print(f"index len : {indexLen}")
+
+                dists = fingerDist, indexLen
+
+                return [palm_coords, dists]
+        return [(0.5, 0), (1, 1)]
 
     def close(self):
         self.cap.release()
@@ -61,7 +78,7 @@ class HandTracker:
 if __name__ == "__main__":
     hand_tracker = HandTracker()
     while True:
-        coords = hand_tracker.get_palm_coords()
+        coords = hand_tracker.getPalmCoords()
         if coords:
             print("Palm coordinates:", coords)
         if cv2.waitKey(10) & 0xFF == ord('q'):
