@@ -4,6 +4,14 @@ from tracker import HandTracker
 
 class RobotArmSimulation:
     def __init__(self, arm_length=44, max_x=176, max_y=88):
+        """
+        Initializes simulation
+
+        :param arm_length: simulated arm length, both arm will be this length
+        :param max_x: total len of x axis
+        :param may_y: total high on y axis
+        """
+
         self.tracker = HandTracker()
         self.arm_length = arm_length
         self.max_x = max_x
@@ -11,24 +19,30 @@ class RobotArmSimulation:
         self.x0 = 0
         self.y0 = 0
 
-    def getTracker(self):
-        return self.tracker
-
     def simulate(self, iterations=1000):
+        """
+        Simulates robot arm
+
+        :param iterations: for how many iterations while loop will go
+        """
+
         i = 0
         while i < iterations:
+            # gets all info from webcamera feed
             stuff = self.tracker.getPalmCoords()
+
+            # takes palm coords and calculates real coord with them
             scaled_coords = stuff[0]
             coords = self.tracker.getReal(scaled_coords[0], scaled_coords[1], self.max_x, self.max_y)
 
+            # calcs distance between fingers compare to len of index finger
             dist = stuff[1]
             maxDist = dist[1] * 2
             currentDist = (dist[0] / maxDist ) - 0.1
             if currentDist < 0:
                 currentDist = 0
 
-            print(f"opening : {currentDist * 100}%")
-
+            # draws plots everything
             if coords:
                 theta1, theta2 = self.tracker.calculateAnglesRad(coords[0], coords[1], self.y0, self.arm_length, self.arm_length)
 
@@ -55,9 +69,18 @@ class RobotArmSimulation:
             i += 1
 
     def captureInitialCoords(self, iterations=100):
+        """
+        Prints out webcamera info, like coords
+
+        :param iterations: for how many iterations while loop will go
+        """
+
         i = 0
         while i < iterations:
+            # gets palm cords
             coords = self.tracker.getPalmCoords()
+
+            # prints them out
             if coords:
                 print(f"Original: {coords}")
                 real_x = (coords[0] * self.max_x) - (self.max_x / 2)
