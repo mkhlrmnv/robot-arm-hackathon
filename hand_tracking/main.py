@@ -12,8 +12,8 @@ if __name__ == "__main__":
     # time.sleep(2)  # Wait for the serial connection to establish
     calculator = CoordinateCalculator()
 
-    tracker = HandTracker()
     simulation = RobotArmSimulation(arm_length=44, max_x=176, max_y=88)
+    tracker = simulation.getTracker()
 
     while True:
         cords = tracker.getPalmCoords()
