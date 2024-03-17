@@ -6,6 +6,7 @@
 
 #include <Servo.h>
 
+// variables for servos
 Servo servo1;
 Servo servo2;
 Servo servo3;
@@ -18,9 +19,11 @@ int tinyYStep = 0;
 int angleXToReach = 45;
 int angleYToReach = 120;
 
+// variables for reading data from usb
 String cmd;
 int i = 100;
 
+// moves little bit toward wanted angle
 void moveToAngle(int angleX, int angleY, Servo &servXToMove, Servo &servYToMove, int &lastXPosition, int &lastYPosition) {
   
   int stepX = 0;
@@ -58,6 +61,7 @@ void moveToAngle(int angleX, int angleY, Servo &servXToMove, Servo &servYToMove,
 
 
 void setup() {
+  // initialize display
   System_Init();
   Serial.print(F("OLED_Init()...\r\n"));
   OLED_1in5_Init();
@@ -66,6 +70,7 @@ void setup() {
 
   Serial.begin(115200);
 
+  // initialize servo
   servo1.attach(9);
   servo2.attach(10);
 
