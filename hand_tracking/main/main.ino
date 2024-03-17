@@ -4,8 +4,58 @@
 #include "Debug.h"
 #include "ImageData.h"
 
+#include <Servo.h>
+
+Servo servo1;
+Servo servo2;
+Servo servo3;
+
+int lastXPosition = 0;
+int lastYPosition = 0;
+int tinyXStep = 0;
+int tinyYStep = 0;
+
+int angleXToReach = 45;
+int angleYToReach = 120;
+
 String cmd;
 int i = 100;
+
+void moveToAngle(int angleX, int angleY, Servo &servXToMove, Servo &servYToMove, int &lastXPosition, int &lastYPosition) {
+  
+  int stepX = 0;
+  int stepY = 0;
+  // Check if either servo needs to move
+  if (lastXPosition != angleX || lastYPosition != angleY) {
+    
+    // Determine step direction for each servo
+    if(lastXPosition != angleX){
+      stepX = (angleX > lastXPosition) ? 1 : -1;
+    }
+    if(lastYPosition != angleY){
+      stepY = (angleY > lastYPosition) ? 1 : -1;
+    }
+
+
+    // Move both servos simultaneously until both reach their target angles
+    for (int i = lastXPosition , j = lastYPosition ; i != angleX || j != angleY; i += stepX, j += stepY) 
+  
+       // Move servos towards target angles directly
+      if (lastXPosition != angleXToReach) {
+        stepX = (angleXToReach > lastXPosition) ? 1 : -1; 
+        servo1.write(lastXPosition + stepX);
+        lastXPosition += stepX;
+      }
+      if (lastYPosition != angleYToReach) {
+        stepY = (angleYToReach > lastYPosition) ? 1 : -1; 
+        servo2.write(lastYPosition + stepY);
+        lastYPosition += stepY;
+      }
+  
+   delay(10); // Short delay
+    }
+  }
+
 
 void setup() {
   System_Init();
@@ -13,6 +63,16 @@ void setup() {
   OLED_1in5_Init();
   Driver_Delay_ms(500); 
   OLED_1in5_Clear();  
+
+  Serial.begin(115200);
+
+  servo1.attach(9);
+  servo2.attach(10);
+
+  servo1.write(0);
+  servo2.write(0);
+
+  Serial.print("NEW SEQUENCE ----------------------------------");
   
   //0.Create a new image cache
   UBYTE *BlackImage;
@@ -67,6 +127,18 @@ while (1) {
     OLED_1in5_Display_Part(BlackImage, 0, 0, 32, 64); 
 
     Driver_Delay_ms(1);  
+
+    angleXToReach = x;
+    angleYToReach = y;
+
+    if(lastXPosition != angleXToReach){
+      tinyXStep = (angleXToReach > lastXPosition) ? tinyXStep + 1 : tinyXStep - 1;
+    }
+    if(lastYPosition != angleYToReach){
+      tinyYStep = (angleYToReach > lastYPosition) ? tinyYStep + 1 : tinyYStep - 1;
+    }
+   
+    moveToAngle(tinyXStep, tinyYStep, servo1, servo2, lastXPosition, lastYPosition);
     
     // OLED_1in5_Clear();  
   }   
