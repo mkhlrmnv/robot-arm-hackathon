@@ -81,6 +81,8 @@ class HandTracker:
 
         # RGB 2 BGR
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+        # shows webcamera on the screen
         cv2.imshow(":)", image)
 
         # if there are any detection
