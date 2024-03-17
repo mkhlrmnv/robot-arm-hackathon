@@ -62,8 +62,8 @@ class HandTracker:
         :return: tuple(theta1, theta2) <- theta1 is angle between floor and bottom arm and theta2 is angle between arms
         """
 
-        theta1 = 90
-        theta2 = 90
+        theta1 = 0
+        theta2 = 0
 
         # D = (x^2 + y^2 - l1^2 - l2^2) / (2 * l1 * l2)
 
