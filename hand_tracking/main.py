@@ -33,5 +33,10 @@ if __name__ == "__main__":
         else:
             print(f"Detected coords: {round(realX)}, {round(realY)}, {dist}")
 
+        if cv2.waitKey(10) & 0xFF == ord('q'):  # Press 'q' to quit
+            break
+    
+    tracker.close()
+
         # time.sleep(1)  # Adjust the delay as needed
 
