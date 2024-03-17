@@ -29,6 +29,15 @@ class RobotArmSimulation:
         real_x = (x * self.max_x) - (self.max_x / 2)
         real_y = ((1 - y) * self.max_y)
         return real_x, real_y
+    
+    def calcDis(self, dist, len):
+        maxDist = dist * 2
+        currentDist = (len / maxDist ) - 0.1
+        if currentDist < 0:
+            currentDist = 0
+
+        return round(currentDist * 100)
+
 
     def simulate(self, iterations=1000):
         i = 0
