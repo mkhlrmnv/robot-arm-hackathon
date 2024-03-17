@@ -1,12 +1,19 @@
 import serial
 from simulation import RobotArmSimulation
+import cv2
 
 class CoordinateCalculator:
     def __init__(self):
         pass
 
 if __name__ == "__main__":
-    ser = serial.Serial(port='/dev/cu.usbserial-10',  baudrate=115200, timeout=.1)  # Change 'COM3' to the appropriate port
+
+    try:
+        ser = serial.Serial(port='/dev/cu.usbserial-10',  baudrate=115200, timeout=.1)  # Change 'COM3' to the appropriate port
+        print("Connected to Arduino")
+    except:
+        print("Couldn't access Arduino")
+        ser = None
     # time.sleep(2)  # Wait for the serial connection to establish
     calculator = CoordinateCalculator()
 
@@ -20,20 +27,11 @@ if __name__ == "__main__":
 
         dist = simulation.calcDis(cords[1][1], cords[1][0])
 
-        ser.write(f"{round(realX)};{round(realY)};{dist}\r".encode())
-        print(f"Sent coordinates: {round(realX)}, {round(realY)}, {dist}")
+        if ser:
+            ser.write(f"{round(realX)};{round(realY)};{dist}\r".encode())
+            print(f"Sent coordinates: {round(realX)}, {round(realY)}, {dist}")
+        else:
+            print(f"Detected coords: {round(realX)}, {round(realY)}, {dist}")
+
         # time.sleep(1)  # Adjust the delay as needed
-        
-"""
-import serial
-import time
-
-arduino = serial.Serial(port='/dev/cu.usbserial-10',  baudrate=115200, timeout=.1)
-
-while True:
-    cmd = input("put something: ")
-    cmd += '\r'
-    arduino.write(cmd.encode())
-
-"""
 
