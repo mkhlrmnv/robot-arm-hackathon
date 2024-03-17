@@ -8,3 +8,7 @@ Arm is being moved by computer vision that detects humans hand and gives arm sig
 Computer vision and kinematics math: Mikhail Romanov
 Mechanical design: Jaakko Aalto
 Control of the motors and Arduino code: Daniel
+
+# Result
+We had three separately working parts but we didn’t had any time to put them together and at least try to make them work.
+We will now be continuing on this project:(
