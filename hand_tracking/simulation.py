@@ -13,6 +13,9 @@ class RobotArmSimulation:
         self.x0 = 0
         self.y0 = 0
 
+    def getTracker(self):
+        return self.tracker
+
     def calculateAngles(self, x, y):
         theta2 = np.arccos((x**2 + y**2 - self.arm_length**2 - self.arm_length**2) / (2 * self.arm_length * self.arm_length))
         theta1 = np.arctan2(y, x) - np.arctan2(self.arm_length * np.sin(theta2), self.arm_length + self.arm_length * np.cos(theta2))
