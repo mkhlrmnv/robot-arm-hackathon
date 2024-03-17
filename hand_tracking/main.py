@@ -1,5 +1,6 @@
 import serial
 from simulation import RobotArmSimulation
+from tracker import HandTracker
 import cv2
 """
 Imports libraries
@@ -14,7 +15,14 @@ class CoordinateCalculator:
     """
 
     def __init__(self):
+        self.l1 = 44
+        self.l2 = 44
+        self.tot_x = (self.l1 + self.l2) * 2
+        self.tot_y = self.l1 + self.l2
+        self.x0 = 0
+        self.y0 = 0
         pass
+    
 
 if __name__ == "__main__":
     """
@@ -31,21 +39,22 @@ if __name__ == "__main__":
         ser = None
 
     # initialize main class
-    calculator = CoordinateCalculator()
+    main = CoordinateCalculator()
 
     # initializes tracer and simulation classes
-    simulation = RobotArmSimulation(arm_length=44, max_x=176, max_y=88)
-    tracker = simulation.getTracker()
+    # simulation = RobotArmSimulation(arm_length=44, max_x=176, max_y=88)
+    tracker = HandTracker()
 
     # while loop until 'q' is pressed
     while True:
         # takes palm coordinates from webcamera and converts them from scaled x and y to usable x and y 
         cords = tracker.getPalmCoords()
         x, y = cords[0]
-        realX, realY = simulation.getReal(x, y)
+        realX, realY = tracker.getReal(x, y, main.tot_x, main.tot_y)
+
 
         # calculates distance between fingers
-        dist = simulation.calcDis(cords[1][1], cords[1][0])
+        dist = tracker.calcDis(cords[1][1], cords[1][0])
 
         # if connected to arduino -> send to arduino
         if ser:

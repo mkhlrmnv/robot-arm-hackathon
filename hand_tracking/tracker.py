@@ -48,6 +48,29 @@ class HandTracker:
             # dist between p1 and p2 is sqrt((p1.x - p2.x)^2 + (p1.y - p2.y)^2)
             res += np.sqrt(np.power(list[i].x - list[i + 1].x, 2) + np.power(list[i].y - list[i + 1].y, 2))
         return res
+    
+    def calculateAngles(self, x, y, y0, l1, l2):
+        theta2 = np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
+        theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
+        
+        midY = y0 + l1 * np.sin(theta1)
+
+        if midY < 0:
+            theta2 = -np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
+            theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
+
+        return theta1, theta2
+
+    def getReal(self, x, y, max_x, max_y):
+        real_x = (x * max_x) - (max_x / 2)
+        real_y = ((1 - y) * max_y)
+        return real_x, real_y
+    
+    def calcDis(self, dist, len):
+        maxDist = dist * 2
+        currentDist = (len / maxDist ) - 0.1
+        if currentDist < 0:
+            currentDist = 0
 
     def getPalmCoords(self):
         """

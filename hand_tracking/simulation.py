@@ -14,38 +14,12 @@ class RobotArmSimulation:
     def getTracker(self):
         return self.tracker
 
-    def calculateAngles(self, x, y):
-        theta2 = np.arccos((x**2 + y**2 - self.arm_length**2 - self.arm_length**2) / (2 * self.arm_length * self.arm_length))
-        theta1 = np.arctan2(y, x) - np.arctan2(self.arm_length * np.sin(theta2), self.arm_length + self.arm_length * np.cos(theta2))
-        
-        midY = self.y0 + self.arm_length * np.sin(theta1)
-
-        if midY < 0:
-            theta2 = -np.arccos((x**2 + y**2 - self.arm_length**2 - self.arm_length**2) / (2 * self.arm_length * self.arm_length))
-            theta1 = np.arctan2(y, x) - np.arctan2(self.arm_length * np.sin(theta2), self.arm_length + self.arm_length * np.cos(theta2))
-
-        return theta1, theta2
-
-    def getReal(self, x, y):
-        real_x = (x * self.max_x) - (self.max_x / 2)
-        real_y = ((1 - y) * self.max_y)
-        return real_x, real_y
-    
-    def calcDis(self, dist, len):
-        maxDist = dist * 2
-        currentDist = (len / maxDist ) - 0.1
-        if currentDist < 0:
-            currentDist = 0
-
-        return round(currentDist * 100)
-
-
     def simulate(self, iterations=1000):
         i = 0
         while i < iterations:
             stuff = self.tracker.getPalmCoords()
             scaled_coords = stuff[0]
-            coords = self.getReal(scaled_coords[0], scaled_coords[1])
+            coords = self.tracker.getReal(scaled_coords[0], scaled_coords[1], self.max_x, self.max_y)
 
             dist = stuff[1]
             maxDist = dist[1] * 2
@@ -53,10 +27,10 @@ class RobotArmSimulation:
             if currentDist < 0:
                 currentDist = 0
 
-            print(f"opening %: {currentDist}")
+            print(f"opening : {currentDist * 100}%")
 
             if coords:
-                theta1, theta2 = self.calculateAngles(coords[0], coords[1])
+                theta1, theta2 = self.tracker.calculateAngles(coords[0], coords[1], self.y0, self.arm_length, self.arm_length)
 
                 x1 = self.x0 + self.arm_length * np.cos(theta1)
                 y1 = self.y0 + self.arm_length * np.sin(theta1)
