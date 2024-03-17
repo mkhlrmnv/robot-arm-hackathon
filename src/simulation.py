@@ -30,7 +30,7 @@ class RobotArmSimulation:
             print(f"opening : {currentDist * 100}%")
 
             if coords:
-                theta1, theta2 = self.tracker.calculateAngles(coords[0], coords[1], self.y0, self.arm_length, self.arm_length)
+                theta1, theta2 = self.tracker.calculateAnglesRad(coords[0], coords[1], self.y0, self.arm_length, self.arm_length)
 
                 x1 = self.x0 + self.arm_length * np.cos(theta1)
                 y1 = self.y0 + self.arm_length * np.sin(theta1)

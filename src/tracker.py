@@ -49,6 +49,36 @@ class HandTracker:
             res += np.sqrt(np.power(list[i].x - list[i + 1].x, 2) + np.power(list[i].y - list[i + 1].y, 2))
         return res
     
+    def calculateAnglesRad(self, x, y, y0, l1, l2):
+        theta1 = 0
+        theta2 = 0
+
+        # D = (x^2 + y^2 - l1^2 - l2^2) / (2 * l1 * l2)
+
+        D = (x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2)
+        
+        # makes sure that -1 <= D <= 1, because cos^-1 limits are those
+        if D > 1:
+            D = 1
+        if D < -1:
+            D = -1
+        
+        # theta2 = cos^-1(D) || 
+        theta2 = np.arccos(abs(D))
+
+        #theta1 = atan2(y, x) - atan2(l2 * sin(theta2), l1 + l2 * cos(theta2))
+        theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
+        
+        # calculates what is coordinate of middle join with new angles
+        midY = y0 + l1 * np.sin(theta1)
+
+        # if it's negative, new_theta2 = old_theta2 * (-1), and new theta1 is calculates with new theta2
+        if midY < 0:
+            theta2 = -np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
+            theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
+
+        return theta1, theta2
+    
     def calculateAngles(self, x, y, y0, l1, l2):
         """
         Calculates angles so that arm can reach some x and y coord
