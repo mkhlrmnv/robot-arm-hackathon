@@ -62,8 +62,21 @@ class HandTracker:
         :return: tuple(theta1, theta2) <- theta1 is angle between floor and bottom arm and theta2 is angle between arms
         """
 
-        # theta2 = cos^-1(D) || D = (x^2 + y^2 - l1^2 - l2^2) / (2 * l1 * l2)
-        theta2 = np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
+        theta1 = 90
+        theta2 = 90
+
+        # D = (x^2 + y^2 - l1^2 - l2^2) / (2 * l1 * l2)
+
+        D = (x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2)
+        
+        # makes sure that -1 <= D <= 1, because cos^-1 limits are those
+        if D > 1:
+            D = 1
+        if D < -1:
+            D = -1
+        
+        # theta2 = cos^-1(D) || 
+        theta2 = np.arccos(abs(D))
 
         #theta1 = atan2(y, x) - atan2(l2 * sin(theta2), l1 + l2 * cos(theta2))
         theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
@@ -76,7 +89,22 @@ class HandTracker:
             theta2 = -np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
             theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
 
-        # returns tuple
+        theta1 = np.degrees(theta1)
+        theta2 = np.degrees(theta2)
+
+        if theta2 < -90:
+            theta2 = -90
+        if theta2 > 90:
+            theta2 = 90
+
+        if theta1 < -90:
+            theta1 = -90
+        if theta1 > 90:
+            theta1 = 90
+
+        theta1 = theta1 + 90
+        theta2 = theta2 + 90
+        
         return theta1, theta2
 
     def getReal(self, x, y, max_x, max_y):
