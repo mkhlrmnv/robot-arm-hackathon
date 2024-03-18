@@ -3,7 +3,7 @@ import numpy as np
 from tracker import HandTracker
 
 class RobotArmSimulation:
-    def __init__(self, arm_length=44, max_x=176, max_y=88):
+    def __init__(self):
         """
         Initializes simulation
 
@@ -16,9 +16,9 @@ class RobotArmSimulation:
         self.screen_hight = 480
 
         self.tracker = HandTracker()
-        self.arm_length = self.screen_hight / 2
-        self.max_x = self.screen_widht
-        self.max_y = self.screen_hight
+        self.arm_length = (self.screen_hight - 50) / 2
+        self.max_x = self.arm_length * 4
+        self.max_y = self.arm_length * 2
 
         self.x0 = self.screen_widht / 2
         self.y0 = self.screen_hight
