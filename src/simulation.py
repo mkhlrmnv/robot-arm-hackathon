@@ -1,5 +1,5 @@
+import pygame
 import numpy as np
-import matplotlib.pyplot as plt
 from tracker import HandTracker
 
 class RobotArmSimulation:
@@ -12,22 +12,42 @@ class RobotArmSimulation:
         :param may_y: total high on y axis
         """
 
+        self.screen_widht = 854
+        self.screen_hight = 480
+
         self.tracker = HandTracker()
-        self.arm_length = arm_length
-        self.max_x = max_x
-        self.max_y = max_y
-        self.x0 = 0
-        self.y0 = 0
+        self.arm_length = self.screen_hight / 2
+        self.max_x = self.screen_widht
+        self.max_y = self.screen_hight
 
-    def simulate(self, iterations=1000):
+        self.x0 = self.screen_widht / 2
+        self.y0 = self.screen_hight
+
+        pygame.init()
+        self.screen = pygame.display.set_mode((self.screen_widht, self.screen_hight))
+        pygame.display.set_caption("Robot Arm Simulation")
+
+    def draw_robot_arm(self, x0, y0, x1, y1, x2, y2, current_dist):
+        self.screen.fill((255, 255, 255))
+
+        pygame.draw.line(self.screen, (0, 0, 255), (x0, y0), (x1, y1), 3)  # First link
+        pygame.draw.line(self.screen, (255, 0, 0), (x1, y1), (x2, y2), 3)  # Second link
+        pygame.draw.line(self.screen, (0, 255, 0), (0, 0), (10 * current_dist, -10), 3)  # Distance
+        pygame.draw.circle(self.screen, (0, 0, 0), (x0, y0), 5)  # Base
+
+        pygame.display.flip()
+
+    def simulate(self):
         """
-        Simulates robot arm
-
-        :param iterations: for how many iterations while loop will go
+        Simulates robot arm until the user quits the application.
         """
 
-        i = 0
-        while i < iterations:
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
             # gets all info from webcamera feed
             stuff = self.tracker.getPalmCoords()
 
@@ -37,61 +57,24 @@ class RobotArmSimulation:
 
             # calcs distance between fingers compare to len of index finger
             dist = stuff[1]
-            maxDist = dist[1] * 2
-            currentDist = (dist[0] / maxDist ) - 0.1
-            if currentDist < 0:
-                currentDist = 0
+            max_dist = dist[1] * 2
+            current_dist = (dist[0] / max_dist) - 0.1
+            if current_dist < 0:
+                current_dist = 0
 
             # draws plots everything
             if coords:
-                theta1, theta2 = self.tracker.calculateAnglesRad(coords[0], coords[1], self.y0, self.arm_length, self.arm_length)
+                theta1, theta2 = self.tracker.calculateAnglesForSim(coords[0], coords[1], self.y0, self.arm_length,
+                                                                  self.arm_length)
 
                 x1 = self.x0 + self.arm_length * np.cos(theta1)
-                y1 = self.y0 + self.arm_length * np.sin(theta1)
-                
+                y1 = self.y0 - self.arm_length * np.sin(theta1)
+
                 x2 = x1 + self.arm_length * np.cos(theta1 + theta2)
-                y2 = y1 + self.arm_length * np.sin(theta1 + theta2)
+                y2 = y1 - self.arm_length * np.sin(theta1 + theta2)
 
-                plt.figure()
-                plt.plot([0, x1], [0, y1], 'b-o')  # First link
-                plt.plot([x1, x2], [y1, y2], 'r-o')  # Second link
-                plt.plot([0, 10 * currentDist], [-10, -10], 'g-o')
-                plt.plot(0, 0, 'ko')  # Base
-                plt.axis('equal')
-                plt.xlim(-100, 100)
-                plt.ylim(-20, 100)
-                plt.xlabel('X-axis')
-                plt.ylabel('Y-axis')
-                plt.title('Robot Arm Simulation')
-                plt.grid(True)
-                plt.show()
-
-            i += 1
-
-    def captureInitialCoords(self, iterations=100):
-        """
-        Prints out webcamera info, like coords
-
-        :param iterations: for how many iterations while loop will go
-        """
-
-        i = 0
-        while i < iterations:
-            # gets palm cords
-            coords = self.tracker.getPalmCoords()
-
-            # prints them out
-            if coords:
-                print(f"Original: {coords}")
-                real_x = (coords[0] * self.max_x) - (self.max_x / 2)
-                real_y = (coords[1] * self.max_y)
-                real_pair = (real_x, real_y)
-                print(f"Converted: {real_pair}")
-            else:
-                pair = (0, self.max_y)
-                print(pair)
+                self.draw_robot_arm(self.x0, self.y0, x1, y1, x2, y2, current_dist)
 
 if __name__ == "__main__":
     robot_arm = RobotArmSimulation()
-    robot_arm.simulate(iterations=1000)
-    robot_arm.captureInitialCoords()
+    robot_arm.simulate()
