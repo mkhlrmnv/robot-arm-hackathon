@@ -49,9 +49,9 @@ class HandTracker:
             res += np.sqrt(np.power(list[i].x - list[i + 1].x, 2) + np.power(list[i].y - list[i + 1].y, 2))
         return res
     
-    def calculateAnglesRad(self, x, y, y0, l1, l2):
+    def calculateAnglesForSim(self, x, y, y0, l1, l2):
         """
-        Calculates angles in radians so that arm can reach some x and y coord
+        Calculates angles in rads for simulation
 
         :param x: wanted x coord
         :param y: wanted y coord
@@ -61,34 +61,35 @@ class HandTracker:
 
         :return: tuple(theta1, theta2) <- theta1 is angle between floor and bottom arm and theta2 is angle between arms
         """
-        theta1 = 0
-        theta2 = 0
 
-        # D = (x^2 + y^2 - l1^2 - l2^2) / (2 * l1 * l2)
-
+        # calculates distance between (x0, y0) and (x, y)
         D = (x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2)
-        
-        # makes sure that -1 <= D <= 1, because cos^-1 limits are those
-        if D > 1:
-            D = 1
+
+        # cos^-1 works only in range [-1, 1] so prevents crashes
         if D < -1:
             D = -1
-        
-        # theta2 = cos^-1(D) || 
-        theta2 = np.arccos(abs(D))
+        if D > 1:
+            D = 1
+                
+        # theta2 = cos^-1(D)
+        theta2 = np.arccos(D)
 
         #theta1 = atan2(y, x) - atan2(l2 * sin(theta2), l1 + l2 * cos(theta2))
         theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
-        
-        # calculates what is coordinate of middle join with new angles
-        midY = y0 + l1 * np.sin(theta1)
 
-        # if it's negative, new_theta2 = old_theta2 * (-1), and new theta1 is calculates with new theta2
-        if midY < 0:
-            theta2 = -np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
+        # calculates y coord of middle joint for preventing it going outside the frame
+        midY = y0 - l1 * np.sin(theta1)
+        
+        # calculates high of the sim so it can prevent arm going outside the frame
+        maxY = l1 + l2
+
+        # if y0 is too over frame high, calculates different angles
+        if midY > maxY:
+            theta2 = -np.arccos(D)
             theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
 
         return theta1, theta2
+
     
     def calculateAngles(self, x, y, y0, l1, l2):
         """
@@ -127,7 +128,7 @@ class HandTracker:
 
         # if it's negative, new_theta2 = old_theta2 * (-1), and new theta1 is calculates with new theta2
         if midY < 0:
-            theta2 = -np.arccos((x**2 + y**2 - l1**2 - l2**2) / (2 * l1 * l2))
+            theta2 = -np.arccos(D)
             theta1 = np.arctan2(y, x) - np.arctan2(l2 * np.sin(theta2), l1 + l2 * np.cos(theta2))
 
         # converts to degrees
